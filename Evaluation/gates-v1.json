@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "decision": {
+    "minimumEligiblePerArm": 1000,
+    "minimumShownPerArm": 200,
+    "minimumDays": 7,
+    "minimumRelativeECCRImprovement": 0.05,
+    "bootstrapConfidenceLevel": 0.95,
+    "requireConfidenceIntervalLowerBoundAboveZero": true
+  },
+  "guardrails": {
+    "maximumOpportunitySuccessDropPoints": 0.02,
+    "maximumCoverageDropPoints": 0.02,
+    "maximumStaleRateIncreasePoints": 0.01,
+    "maximumWrongShowRateIncreasePoints": 0.01,
+    "maximumP95TTFTRegressionRatio": 0.10,
+    "maximumP95TTFTRegressionMilliseconds": 50
+  }
+}
