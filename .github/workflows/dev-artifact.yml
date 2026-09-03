@@ -1,0 +1,62 @@
+name: Build Dev Artifact
+
+on:
+  push:
+    branches: [build/context-selector-preview]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Cotabby Dev artifact
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: latest-stable
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild \
+            -project Cotabby.xcodeproj \
+            -resolvePackageDependencies
+
+      - name: Build Cotabby Dev
+        run: |
+          xcodebuild \
+            -project Cotabby.xcodeproj \
+            -scheme 'Cotabby Dev' \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Sign and package app
+        run: |
+          set -euo pipefail
+          app_path='build/DerivedData/Build/Products/Debug/Cotabby Dev.app'
+          test -d "${app_path}"
+          codesign --force --deep --sign - --timestamp=none "${app_path}"
+          codesign --verify --deep --strict --verbose=2 "${app_path}"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "${app_path}" \
+            build/Cotabby-Dev-ContextSelector.zip
+          shasum -a 256 build/Cotabby-Dev-ContextSelector.zip \
+            | tee build/Cotabby-Dev-ContextSelector.sha256
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cotabby-dev-context-selector
+          path: |
+            build/Cotabby-Dev-ContextSelector.zip
+            build/Cotabby-Dev-ContextSelector.sha256
+          retention-days: 7
+          if-no-files-found: error
