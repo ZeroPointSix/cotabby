@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cotabby.app/schema/replay-case-v1.json",
+  "title": "Cotabby replay evaluation case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "sessionId", "surface", "language", "caretMode",
+    "engine", "model", "configHash", "expectedAction", "eligible", "requested",
+    "generated", "shown", "accepted", "suggestedCharacters", "acceptedCharacters",
+    "retainedAICharacters", "retainedTotalAddedCharacters"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "surface": { "enum": ["email", "chat", "document", "search", "code", "other"] },
+    "language": { "type": "string", "minLength": 2 },
+    "caretMode": { "enum": ["end", "middle"] },
+    "engine": { "type": "string", "minLength": 1 },
+    "model": { "type": "string", "minLength": 1 },
+    "configHash": { "type": "string", "minLength": 1 },
+    "expectedAction": { "enum": ["show", "suppress"] },
+    "precedingText": { "type": "string" },
+    "trailingText": { "type": "string" },
+    "referenceContinuation": { "type": "string" },
+    "prediction": { "type": "string" },
+    "eligible": { "type": "boolean" },
+    "requested": { "type": "boolean" },
+    "generated": { "type": "boolean" },
+    "shown": { "type": "boolean" },
+    "accepted": { "type": "boolean" },
+    "suggestedCharacters": { "type": "integer", "minimum": 0 },
+    "acceptedCharacters": { "type": "integer", "minimum": 0 },
+    "retainedAICharacters": { "type": "integer", "minimum": 0 },
+    "retainedTotalAddedCharacters": { "type": "integer", "minimum": 0 },
+    "suppressionReason": { "type": ["string", "null"] },
+    "staleReason": { "type": ["string", "null"] },
+    "superseded": { "type": "boolean", "default": false },
+    "latency": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "ttftMs": { "type": "number", "minimum": 0 },
+        "finalMs": { "type": "number", "minimum": 0 },
+        "generationMs": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}
