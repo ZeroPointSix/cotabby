@@ -1,0 +1,26 @@
+name: Replay evaluation
+
+on:
+  pull_request:
+    paths:
+      - "Evaluation/**"
+      - "scripts/eval/**"
+      - ".github/workflows/replay-eval.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract-and-scoring:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate fixture and generate aggregate report
+        run: swift scripts/eval/replay_eval.swift Evaluation/fixtures/replay-sample.jsonl build/eval/replay-report.json
+      - name: Upload aggregate report
+        uses: actions/upload-artifact@v4
+        with:
+          name: replay-eval-report
+          path: build/eval/replay-report.json
